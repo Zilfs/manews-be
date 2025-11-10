@@ -35,7 +35,7 @@ func NewConfig() *Config{
 			JwtIssuer: viper.GetString("JWT_ISSUER"),
 		},
 		Psql: PsqlDB{
-			Host: viper.GetString("DATABSE_HOST"),
+			Host: viper.GetString("DATABASE_HOST"),
 			Port: viper.GetString("DATABASE_PORT"),
 			User: viper.GetString("DATABASE_USER"),
 			Password: viper.GetString("DATABASE_PASSWORD"),
