@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
+      POSTGRES_DB: ${DATABASE_NAME:-manews}
+    ports:
+      - "${DATABASE_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+# Uncomment the following section when you have migrations ready
+# services:
+#   migrate:
+#     image: migrate/migrate
+#     depends_on:
+#       - db
+#     volumes:
+#       - ./migrations:/migrations
+#     command: ["-path", "/migrations", "-database", "postgres://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-password}@db:${DATABASE_PORT:-5432}/${DATABASE_NAME:-manews}?sslmode=disable", "up"]
