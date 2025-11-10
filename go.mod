@@ -5,8 +5,10 @@ go 1.25.3
 require gorm.io/driver/postgres v1.6.0
 
 require (
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/spf13/cobra v1.10.1 // indirect
 )
 
 require (
