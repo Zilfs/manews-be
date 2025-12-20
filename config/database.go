@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"manews/database/seeds"
 
 	"github.com/rs/zerolog/log"
 	"gorm.io/driver/postgres"
@@ -32,6 +33,8 @@ func(cfg Config) ConnectionPostgres()(*Postrgres, error){
 		log.Error().Err(err).Msg("[ConnectionPostgres-2] Failed to get database instance ")
 		return nil, err
 	}
+
+	seeds.SeedRoles(db)
 
 	sqlDB.SetMaxOpenConns(cfg.Psql.DBMaxOpen)
 	sqlDB.SetMaxIdleConns(cfg.Psql.DBMaxIdle)
