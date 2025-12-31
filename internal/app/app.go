@@ -4,6 +4,9 @@ import (
 	"context"
 	"log"
 	"manews/config"
+	"manews/internal/adapter/handler"
+	"manews/internal/adapter/repository"
+	"manews/internal/core/service"
 	"manews/lib/auth"
 	"manews/lib/middleware"
 	"manews/lib/pagination"
@@ -22,7 +25,7 @@ import (
 
 func RunServer() {
 	cfg := config.NewConfig()
-	_, err := cfg.ConnectionPostgres()
+	db, err := cfg.ConnectionPostgres()
 	if err != nil {
 		log.Fatal("Failed to connect to database: %v", err)
 		return
@@ -32,10 +35,19 @@ func RunServer() {
 	cdfR2 := cfg.LoadAwsConfig()
 	_ = s3.NewFromConfig(cdfR2)
 
-	_ = auth.NewJwt(cfg)
+	jwt := auth.NewJwt(cfg)
 	_ = middleware.NewMiddleware(cfg)
 
 	_ = pagination.NewPagination()
+
+	// Repository
+	authRepo := repository.NewAuthRepository(db.DB)
+
+	// Service
+	authService := service.NewAuthService(authRepo, cfg, jwt)
+
+	// Handler
+	authHandler := handler.NewAuthHandler(authService)
 
 	app := fiber.New()
 	app.Use(cors.New())
@@ -44,7 +56,8 @@ func RunServer() {
 		Format: "[${time}] %{ip} %{status} - %{latency} ${method} ${path}\n",
 	}))
 
-	_ = app.Group("/api")
+	api := app.Group("/api")
+	api.Post("/login", authHandler.Login)
 
 	go func() {
 		if cfg.App.AppPort == "" {
