@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"manews/config"
 	"manews/internal/adapter/repository"
 	"manews/internal/core/domain/entity"
@@ -37,7 +38,8 @@ func (a *authService) GetUserByEmail(ctx context.Context, req entity.LoginReques
 
 	if checkPass := conv.CheckPasswordHash(req.Password, result.Password); !checkPass {
 		code = "[SERVICE] GetUserByEmail - 2"
-		log.Errorw(code, "Invalid password")
+		err = errors.New("invalid password")
+		log.Errorw(code, err)
 		return nil, err
 	}
 

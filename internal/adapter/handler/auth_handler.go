@@ -5,6 +5,7 @@ import (
 	"manews/internal/adapter/handler/response"
 	"manews/internal/core/domain/entity"
 	"manews/internal/core/service"
+	validatorLib "manews/lib/validator"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -38,7 +39,7 @@ func (a *auhtHandler) Login(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errorResp)
 	}
 
-	if err = validate.Struct(req); err != nil {
+	if err = validatorLib.ValidateStruct(req); err != nil {
 		code = "[HANDLER] Login - 2"
 		log.Errorw(code, err)
 		errorResp.Meta.Status = false
@@ -59,7 +60,11 @@ func (a *auhtHandler) Login(c *fiber.Ctx) error {
 		errorResp.Meta.Status = false
 		errorResp.Meta.Message = err.Error()
 
-		return c.Status(fiber.StatusUnauthorized).JSON(errorResp)
+		if err.Error() == "invalid passwword" {
+			return c.Status(fiber.StatusUnauthorized).JSON(errorResp)
+		}
+
+		return c.Status(fiber.StatusInternalServerError).JSON(errorResp)
 	}
 
 	resp.Meta.Status = true
