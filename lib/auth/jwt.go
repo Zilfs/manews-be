@@ -47,7 +47,7 @@ func (o *Options) VerifyAccessToken(token string) (*entity.JwtData, error) {
 		return nil, err
 	}
 
-	if !parsedToken.Valid {
+	if parsedToken.Valid {
 		claim, ok := parsedToken.Claims.(jwt.MapClaims)
 		if !ok || !parsedToken.Valid {
 			return nil, err
