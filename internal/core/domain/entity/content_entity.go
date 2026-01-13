@@ -5,7 +5,7 @@ import "time"
 type ContentEntity struct {
 	ID          int64
 	Title       string
-	Excerot     string
+	Excerpt     string
 	Description string
 	Image       string
 	Tags        []string
