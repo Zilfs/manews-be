@@ -32,7 +32,14 @@ func (c *contentService) CreateContent(ctx context.Context, req entity.ContentEn
 
 // DeleteContent implements ContentService.
 func (c *contentService) DeleteContent(ctx context.Context, id int64) error {
-	panic("unimplemented")
+	err = c.contentRepo.DeleteContent(ctx, id)
+	if err != nil {
+		code = "[SERVICE] DeleteContent - 1"
+		log.Errorw(code, err)
+		return err
+	}
+
+	return nil
 }
 
 // EditContent implements ContentService.
@@ -42,7 +49,13 @@ func (c *contentService) EditContent(ctx context.Context, req entity.ContentEnti
 
 // GetContentByID implements ContentService.
 func (c *contentService) GetContentByID(ctx context.Context, id int64) (*entity.ContentEntity, error) {
-	panic("unimplemented")
+	result, err := c.contentRepo.GetContentByID(ctx, id)
+	if err != nil {
+		code = "[SERVICE] GetContentByID - 1"
+		log.Errorw(code, err)
+		return nil, err
+	}
+	return result, nil
 }
 
 // GetContents implements ContentService.
