@@ -1,10 +1,13 @@
 package handler
 
 import (
+	"manews/internal/adapter/handler/request"
 	"manews/internal/adapter/handler/response"
 	"manews/internal/core/domain/entity"
 	"manews/internal/core/service"
 	"manews/lib/conv"
+	validatorLib "manews/lib/validator"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
@@ -24,8 +27,65 @@ type contentHandler struct {
 }
 
 // CreateContent implements ContentHandler.
-func (*contentHandler) CreateContent(c *fiber.Ctx) error {
-	panic("unimplemented")
+func (ch *contentHandler) CreateContent(c *fiber.Ctx) error {
+	claims := c.Locals("user").(*entity.JwtData)
+	if claims.UserID == 0 {
+		code := "[HANDLER] DeleteContent - 1"
+		log.Errorw(code, err)
+		errorResp.Meta.Status = false
+		errorResp.Meta.Message = "Unauthorized Access"
+
+		return c.Status(fiber.StatusUnauthorized).JSON(errorResp)
+	}
+
+	userID := claims.UserID
+	var req request.ContentRequest
+	if err = c.BodyParser(&req); err != nil {
+		code := "[HANDLER] CreateContent - 2"
+		log.Errorw(code, err)
+		errorResp.Meta.Status = false
+		errorResp.Meta.Message = "Invalid request body"
+
+		return c.Status(fiber.StatusBadRequest).JSON(errorResp)
+	}
+
+	if err = validatorLib.ValidateStruct(&req); err != nil {
+		code := "[HANDLER] CreateContent - 3"
+		log.Errorw(code, err)
+		errorResp.Meta.Status = false
+		errorResp.Meta.Message = err.Error()
+
+		return c.Status(fiber.StatusBadRequest).JSON(errorResp)
+	}
+
+	tags := strings.Split(req.Tags, ",")
+	reqEntity := entity.ContentEntity{
+		Title:       req.Title,
+		Excerpt:     req.Excerpt,
+		Description: req.Description,
+		Image:       req.Image,
+		Tags:        tags,
+		Status:      req.Status,
+		CategoryID:  req.CategoryID,
+		CreatedByID: int64(userID),
+	}
+
+	err = ch.contentService.CreateContent(c.Context(), reqEntity)
+	if err != nil {
+		code = "[HANDLER] CreateContent - 4"
+		log.Errorw(code, err)
+		errorResp.Meta.Status = false
+		errorResp.Meta.Message = err.Error()
+
+		return c.Status(fiber.StatusInternalServerError).JSON(errorResp)
+	}
+
+	defaultSuccessResponse.Meta.Status = true
+	defaultSuccessResponse.Meta.Message = "Content created successfull"
+	defaultSuccessResponse.Data = nil
+
+	return c.Status(fiber.StatusCreated).JSON(defaultSuccessResponse)
+
 }
 
 // DeleteContent implements ContentHandler.
