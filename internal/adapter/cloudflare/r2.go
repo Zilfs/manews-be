@@ -16,7 +16,7 @@ var code string
 var err error
 
 type CloudflareR2Adapter interface {
-	upladImage(req *entity.FileUploadEntity) (string, error)
+	UploadImage(req *entity.FileUploadEntity) (string, error)
 }
 
 type cloudflareR2Adapter struct {
@@ -25,8 +25,8 @@ type cloudflareR2Adapter struct {
 	Baseurl string
 }
 
-// upladImage implements CloudflareR2Adapter.
-func (c *cloudflareR2Adapter) upladImage(req *entity.FileUploadEntity) (string, error) {
+// UploadImage implements CloudflareR2Adapter.
+func (c *cloudflareR2Adapter) UploadImage(req *entity.FileUploadEntity) (string, error) {
 	openedFile, err := os.Open(req.Path)
 	if err != nil {
 		code = "[CLOUDFALRE R2] UploadImage - 1"
