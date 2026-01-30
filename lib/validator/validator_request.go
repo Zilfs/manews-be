@@ -26,6 +26,8 @@ func ValidateStruct(s interface{}) error {
 				if err.Field() == "Password" {
 					errrorMessage = append(errrorMessage, err.Field()+" must be at least "+err.Param()+" characters long")
 				}
+			case "eqfield":
+				errrorMessage = append(errrorMessage, err.Field()+" must match "+err.Param())
 			default:
 				errrorMessage = append(errrorMessage, "Field "+err.Field()+" is not valid")
 			}
