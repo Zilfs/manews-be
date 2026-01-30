@@ -85,12 +85,12 @@ func RunServer() {
 	categoryApp.Delete("/:categoryId", categoryHandler.DeleteCategory)
 
 	// Content
-	contentApp := adminApp.Group("/content")
+	contentApp := adminApp.Group("/contents")
 	contentApp.Get("/", contentHandler.GetContents)
 	contentApp.Post("/", contentHandler.CreateContent)
-	contentApp.Put("/:categoryId", contentHandler.EditContent)
-	contentApp.Get("/:categoryId", contentHandler.GetContentByID)
-	contentApp.Delete("/:categoryId", contentHandler.DeleteContent)
+	contentApp.Put("/:contentId", contentHandler.EditContent)
+	contentApp.Get("/:contentId", contentHandler.GetContentByID)
+	contentApp.Delete("/:contentId", contentHandler.DeleteContent)
 	contentApp.Post("/upload-image", contentHandler.UploadImageR2)
 
 	go func() {
