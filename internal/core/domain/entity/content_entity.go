@@ -1,6 +1,8 @@
 package entity
 
-import "time"
+import (
+	"time"
+)
 
 type ContentEntity struct {
 	ID          int64
@@ -15,4 +17,14 @@ type ContentEntity struct {
 	CreatedAt   time.Time
 	Category    CategoryEntity
 	User        UserEntity
+}
+
+type QueryString struct {
+	Limit      int
+	Page       int
+	OrderBy    string
+	OrderType  string
+	Search     string
+	CategoryID int64
+	Status     string
 }

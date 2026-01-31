@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"manews/internal/core/domain/entity"
 	"manews/internal/core/domain/model"
 	"strings"
@@ -12,7 +13,7 @@ import (
 )
 
 type ContentRepository interface {
-	GetContents(ctx context.Context) ([]entity.ContentEntity, error)
+	GetContents(ctx context.Context, query entity.QueryString) ([]entity.ContentEntity, error)
 	GetContentByID(ctx context.Context, id int64) (*entity.ContentEntity, error)
 	CreateContent(ctx context.Context, req entity.ContentEntity) error
 	EditContent(ctx context.Context, req entity.ContentEntity) error
@@ -121,10 +122,20 @@ func (c *contentRepository) GetContentByID(ctx context.Context, id int64) (*enti
 }
 
 // GetContents implements ContentRepository.
-func (c *contentRepository) GetContents(ctx context.Context) ([]entity.ContentEntity, error) {
+func (c *contentRepository) GetContents(ctx context.Context, query entity.QueryString) ([]entity.ContentEntity, error) {
 	var modelContents []model.Content
 
-	err := c.db.Order("created_at DESC").Preload(clause.Associations).Find(&modelContents).Error
+	order := fmt.Sprintf("%s %s", query.OrderBy, query.OrderType)
+	offset := (query.Page - 1) * query.Limit
+	status := ""
+
+	err := c.db.Preload(clause.Associations).
+		Where("title ILIKE ? OR excerpt ILIKE ? OR description ILIKE ?", "%"+query.Search+"%", "%"+query.Search+"%", "%"+query.Search+"%").
+		Where("status LIKE ?", "%s"+status+"%s").
+		Order(order).
+		Offset(offset).
+		Limit(query.Limit).
+		Find(&modelContents).Error
 	if err != nil {
 		code = "[REPOSITORY] GetContents - 1"
 		log.Errorw(code, err)
