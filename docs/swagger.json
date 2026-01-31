@@ -39,6 +39,199 @@
             }
           }
         }
+      },
+      "DefaultResponse": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "boolean",
+                "example": false
+              },
+              "message": {
+                "type": "string",
+                "example": "Success"
+              }
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          }
+        }
+      },
+      "CategoryRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Category Title"
+          }
+        }
+      },
+      "ContentRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "title"
+          },
+          "excerpt": {
+            "type": "string",
+            "example": "excerpt"
+          },
+          "description": {
+            "type": "string",
+            "example": "description"
+          },
+          "tags": {
+            "type": "string",
+            "example": "tag1,tag2,tag3"
+          },
+          "category_is": {
+            "type": "integer",
+            "example": 1
+          },
+          "status": {
+            "type": "string",
+            "example": "DRAFT"
+          },
+          "image": {
+            "type": "string",
+            "example": "https://image.co"
+          }
+        }
+      },
+      "UpdatePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "example": "current_password123"
+          },
+          "new_password": {
+            "type": "string",
+            "example": "new_password123"
+          },
+          "confirm_password": {
+            "type": "string",
+            "example": "new_password123"
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "boolean",
+                "example": false
+              },
+              "message": {
+                "type": "string",
+                "example": "Success"
+              }
+            }
+          },
+          "access_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "expired_at": {
+            "type": "integer",
+            "example": 1709222399
+          }
+        }
+      },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Category Title"
+          },
+          "slug": {
+            "type": "string",
+            "example": "category-title"
+          },
+          "created_by_name": {
+            "type": "string",
+            "example": "John Doe"
+          }
+        }
+      },
+      "ContentResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Category Title"
+          },
+          "excerpt": {
+            "type": "string",
+            "example": "excerpt"
+          },
+          "description": {
+            "type": "string",
+            "example": "description"
+          },
+          "status": {
+            "type": "string",
+            "example": "PUBLUSH"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": ["tag1", "tag2", "tag3"]
+            }
+          },
+          "image": {
+            "type": "string",
+            "examp": "https://image.co"
+          },
+          "author ": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "category_name": {
+            "type": "string",
+            "example": "Technology"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "category_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "created_by_id": {
+            "type": "integer",
+            "example": 1
+          }
+        }
       }
     }
   }
