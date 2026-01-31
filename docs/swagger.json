@@ -1,0 +1,45 @@
+{
+  "openapi": "3.0",
+  "info": {
+    "description": "This is an API for Ma Newa Application",
+    "title": "Ma News API",
+    "contact": {
+      "name": "Adnib",
+      "email": "admin@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0"
+  },
+
+  "servers": [
+    {
+      "url": "http://localhost:8080/api"
+    }
+  ],
+  "paths": {},
+  "compoonents": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "boolean",
+                "example": false
+              },
+              "message": {
+                "type": "string",
+                "example": "An error occurred"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
