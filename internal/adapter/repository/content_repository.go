@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"manews/internal/core/domain/entity"
 	"manews/internal/core/domain/model"
+	"math"
 	"strings"
 
 	"github.com/gofiber/fiber/v2/log"
@@ -13,11 +14,11 @@ import (
 )
 
 type ContentRepository interface {
-	GetContents(ctx context.Context, query entity.QueryString) ([]entity.ContentEntity, error)
 	GetContentByID(ctx context.Context, id int64) (*entity.ContentEntity, error)
 	CreateContent(ctx context.Context, req entity.ContentEntity) error
 	EditContent(ctx context.Context, req entity.ContentEntity) error
 	DeleteContent(ctx context.Context, id int64) error
+	GetContents(ctx context.Context, query entity.QueryString) ([]entity.ContentEntity, int64, int64, error)
 }
 
 type contentRepository struct {
@@ -122,16 +123,36 @@ func (c *contentRepository) GetContentByID(ctx context.Context, id int64) (*enti
 }
 
 // GetContents implements ContentRepository.
-func (c *contentRepository) GetContents(ctx context.Context, query entity.QueryString) ([]entity.ContentEntity, error) {
+func (c *contentRepository) GetContents(ctx context.Context, query entity.QueryString) ([]entity.ContentEntity, int64, int64, error) {
 	var modelContents []model.Content
+	var countData int64
 
 	order := fmt.Sprintf("%s %s", query.OrderBy, query.OrderType)
 	offset := (query.Page - 1) * query.Limit
 	status := ""
 
-	err := c.db.Preload(clause.Associations).
+	if query.Status != "" {
+		status = query.Status
+	}
+
+	sqlMain := c.db.Preload(clause.Associations).
 		Where("title ILIKE ? OR excerpt ILIKE ? OR description ILIKE ?", "%"+query.Search+"%", "%"+query.Search+"%", "%"+query.Search+"%").
-		Where("status LIKE ?", "%s"+status+"%s").
+		Where("status LIKE ?", "%s"+status+"%s")
+
+	if query.CategoryID > 0 {
+		sqlMain = sqlMain.Where("category_id = ?", query.CategoryID)
+	}
+
+	err := sqlMain.Model(&model.Content{}).Count(&countData).Error
+	if err != nil {
+		code = "[REPOSITORY] GetContents - 0"
+		log.Errorw(code, err)
+		return nil, 0, 0, err
+	}
+
+	totalPages := int(math.Ceil(float64(countData) / float64(query.Limit)))
+
+	err = sqlMain.
 		Order(order).
 		Offset(offset).
 		Limit(query.Limit).
@@ -139,7 +160,7 @@ func (c *contentRepository) GetContents(ctx context.Context, query entity.QueryS
 	if err != nil {
 		code = "[REPOSITORY] GetContents - 1"
 		log.Errorw(code, err)
-		return nil, err
+		return nil, 0, 0, err
 	}
 
 	resps := []entity.ContentEntity{}
@@ -169,7 +190,7 @@ func (c *contentRepository) GetContents(ctx context.Context, query entity.QueryS
 
 		resps = append(resps, resp)
 	}
-	return resps, nil
+	return resps, countData, int64(totalPages), nil
 }
 
 func NewContentRepository(db *gorm.DB) ContentRepository {
